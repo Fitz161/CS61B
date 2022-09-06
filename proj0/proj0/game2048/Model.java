@@ -115,6 +115,7 @@ public class Model extends Observable {
     }
 
     public boolean mergeOneColumn(Board b, int col){
+        boolean res = false;
         for (int i = size() - 1; i > 0; i -= 1) {
             Tile upperTile = b.tile(col, i);
             Tile lowerTile = b.tile(col, i - 1);
@@ -124,10 +125,11 @@ public class Model extends Observable {
             if (upperTile.value() == lowerTile.value()){
                 //remain the upper tile
                 this.score += upperTile.value() * 2;
-                return b.move(col, i, lowerTile);
+                res |= b.move(col, i, lowerTile);
+                i--; //fix [4, 4, 4, 4] -> [8, 8, X, X]
             }
         }
-        return false;
+        return res;
     }
 
     /** Tilt the board toward SIDE. Return true iff this changes the board.
@@ -149,11 +151,15 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+        board.setViewingPerspective(side);
+
         for (int col = 0; col < board.size(); col++){
             changed |= moveOneColumn(board, col);
             changed |= mergeOneColumn(board, col);
             changed |= moveOneColumn(board, col);
         }
+
+        board.setViewingPerspective(Side.NORTH);
 
         checkGameOver();
         if (changed) {
