@@ -95,6 +95,41 @@ public class Model extends Observable {
         setChanged();
     }
 
+    public boolean moveOneTileToAbove(Board b, int row, int col){
+        for (int i = size() - 1; i > row; i -= 1) {
+            Tile t = b.tile(col, row);
+            if (b.tile(col, i) == null && t != null){
+                b.move(col, i, t);
+                return true;
+            }
+        }
+        return false;
+    }
+    public boolean moveOneColumn(Board b, int col){
+        boolean res = false;
+        // row goes from bottom to top
+        for (int i = size() - 1; i >= 0; i -= 1) {
+            res |= moveOneTileToAbove(b, i, col);
+        }
+        return res;
+    }
+
+    public boolean mergeOneColumn(Board b, int col){
+        for (int i = size() - 1; i > 0; i -= 1) {
+            Tile upperTile = b.tile(col, i);
+            Tile lowerTile = b.tile(col, i - 1);
+            if (upperTile == null || lowerTile == null){
+                continue;
+            }
+            if (upperTile.value() == lowerTile.value()){
+                //remain the upper tile
+                this.score += upperTile.value() * 2;
+                return b.move(col, i, lowerTile);
+            }
+        }
+        return false;
+    }
+
     /** Tilt the board toward SIDE. Return true iff this changes the board.
      *
      * 1. If two Tile objects are adjacent in the direction of motion and have
@@ -114,6 +149,11 @@ public class Model extends Observable {
         // TODO: Modify this.board (and perhaps this.score) to account
         // for the tilt to the Side SIDE. If the board changed, set the
         // changed local variable to true.
+        for (int col = 0; col < board.size(); col++){
+            changed |= moveOneColumn(board, col);
+            changed |= mergeOneColumn(board, col);
+            changed |= moveOneColumn(board, col);
+        }
 
         checkGameOver();
         if (changed) {
