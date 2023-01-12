@@ -1,5 +1,7 @@
 import edu.princeton.cs.algs4.Queue;
 
+import java.util.Iterator;
+
 public class MergeSort {
     /**
      * Removes and returns the smallest item that is in q1 or q2.
@@ -35,7 +37,14 @@ public class MergeSort {
     private static <Item extends Comparable> Queue<Queue<Item>>
             makeSingleItemQueues(Queue<Item> items) {
         // Your code here!
-        return null;
+        Iterator<Item> i = items.iterator();
+        Queue<Queue<Item>> queues = new Queue<>();
+        while (i.hasNext()){
+            Queue<Item> queue = new Queue<Item>();
+            queue.enqueue(i.next());
+            queues.enqueue(queue);
+        }
+        return queues;
     }
 
     /**
@@ -54,13 +63,66 @@ public class MergeSort {
     private static <Item extends Comparable> Queue<Item> mergeSortedQueues(
             Queue<Item> q1, Queue<Item> q2) {
         // Your code here!
-        return null;
+        Queue<Item> queue = new Queue<>();
+        while (!q1.isEmpty() || !q2.isEmpty()){
+            queue.enqueue(getMin(q1, q2));
+        }
+        return queue;
     }
+
 
     /** Returns a Queue that contains the given items sorted from least to greatest. */
     public static <Item extends Comparable> Queue<Item> mergeSort(
             Queue<Item> items) {
         // Your code here!
-        return items;
+        if (items.size() == 1){
+            return items;
+        }
+        Queue<Item> queue = new Queue<>();
+        for (int i = 0; i < items.size() / 2; i++) {
+            queue.enqueue(items.dequeue());
+        }
+        return mergeSortedQueues(mergeSort(queue), mergeSort(items));
+    }
+
+    public static <Item extends Comparable> void printQueue(Queue<Item> queue) {
+        Iterator<Item> i = queue.iterator();
+        while (i.hasNext()){
+            System.out.print(i.next() + " ");
+        }
+        System.out.println();
+    }
+
+    public static void main(String[] args) {
+        // test 1
+        Queue<String> students = new Queue<String>();
+        students.enqueue("Alice");
+        students.enqueue("Vanessa");
+        students.enqueue("Ethan");
+        students.enqueue("Fitz");
+
+        printQueue(students);
+
+        Queue<String> sorted_students = mergeSort(students);
+
+        printQueue(sorted_students);
+
+        // test 2
+        Queue<Integer> table = new Queue<>();
+        table.enqueue(3);
+        table.enqueue(12);
+        table.enqueue(5);
+        table.enqueue(32);
+        table.enqueue(112);
+        table.enqueue(53);
+        table.enqueue(6);
+        table.enqueue(2);
+        table.enqueue(99);
+
+        printQueue(table);
+
+        Queue<Integer> sorted_table = mergeSort(table);
+
+        printQueue(sorted_table);
     }
 }
