@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.io.Serializable;
 import java.io.ObjectOutputStream;
 import java.io.FileOutputStream;
@@ -28,5 +29,9 @@ public class ObjectWriter {
             System.out.println("Error writing object: ");
             e.printStackTrace();
         }
-    } 
+    }
+
+    public void close() throws IOException {
+        os.close();
+    }
 } 

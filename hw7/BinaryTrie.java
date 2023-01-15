@@ -7,7 +7,7 @@ import java.util.PriorityQueue;
 
 public class BinaryTrie implements Serializable {
     Node trie;
-    private static class Node implements Comparable<Node> {
+    private static class Node implements Comparable<Node>, Serializable {
         private final char ch;
         private final int freq;
         private final Node left, right;
